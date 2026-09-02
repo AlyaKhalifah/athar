@@ -24,6 +24,12 @@ const wallWords = [
   ["أهل", "—"], ["بيت", "—"], ["أمان", "—"], ["قهوة", "—"], ["طفولة", "—"],
   ["بحر", "—"], ["طموح", "—"], ["جدّة", "—"], ["سوالف", "—"], ["غيمة", "—"],
   ["ذكريات", "—"], ["نخلة", "—"], ["وعد", "—"], ["رجعة", "—"], ["أثر", "—"],
+  ["مكة", "—"], ["وطن", "—"], ["مستقبل", "—"], ["سعودية", "—"], ["حنين", "—"], ["ضحكة", "—"],
+];
+
+const wallPositions = [
+  [27, 18], [35, 18], [43, 18], [43, 34], [43, 50], [35, 50], [27, 50], [27, 68], [35, 80], [43, 80], [43, 66],
+  [58, 18], [68, 18], [78, 18], [58, 34], [58, 50], [68, 50], [78, 50], [78, 66], [78, 80], [68, 80], [58, 80],
 ];
 
 function todayArabic() {
@@ -37,13 +43,14 @@ export default function Home() {
   const [revealed, setRevealed] = useState(0);
   const [showCard, setShowCard] = useState(Boolean(shared.word));
   const [sound, setSound] = useState(false);
-  const [wall, setWall] = useState(false);
+  const [wall, setWall] = useState(() => new URLSearchParams(window.location.search).get("wall") === "1");
   const [name, setName] = useState(shared.name);
   const [saved, setSaved] = useState(false);
 
   const activeWord = word.trim() || "ذكريات";
   const journeyMemories = useMemo(() => buildMemories(activeWord), [activeWord]);
   const progress = Math.round((revealed / journeyMemories.length) * 100);
+  const displayedWallWords = saved ? [[activeWord, name || "أنت"], ...wallWords] : wallWords;
   const cardText = useMemo(() => `السعودية بالنسبة لي هي: ${activeWord}\n${todayArabic()}\nأثر`, [activeWord]);
 
   const begin = () => {
@@ -145,9 +152,9 @@ export default function Home() {
       </section>}
 
       <section className={`wall ${wall ? "wall-visible" : "wall-scattered"}`} id="wall">
-        <div className="wall-heading"><div><p className="eyebrow">THE COLLECTIVE MEMORY</p><h2>آلاف الكلمات،<br /><em>وطن واحد.</em></h2></div><div className="wall-side"><p className="wall-description">كل كلمة هنا تركها شخص ما. معًا، لا نصنع صورة للسعودية؛ نصنع المساحة التي تتسع لكل ما تعنيه.</p><button className="text-button wall-reveal" onClick={() => setWall(!wall)}>{wall ? "أعد الكلمات إلى بدايتها" : "شاهد الكلمات وهي تتجمع"} <ArrowLeft size={16} /></button></div></div>
-        <div className="word-wall">{wallWords.map(([item, by], index) => <span key={item} style={{ "--i": index } as React.CSSProperties}>{item}<small>{by}</small></span>)}</div>
-        <div className="wall-footer"><span>ذاكرة مفتوحة للجميع</span><span className="wall-counter">{wallWords.length + (saved ? 1 : 0)} أثرًا محفوظًا في هذه اللحظة</span><Feather size={18} /></div>
+        <div className="wall-heading"><div><p className="eyebrow">THE COLLECTIVE MEMORY</p><h2>آلاف الكلمات،<br /><em>وطن واحد.</em></h2></div><div className="wall-side"><p className="wall-description">كل كلمة هنا تركها شخص ما. معًا، لا نصنع صورة للسعودية؛ نصنع المساحة التي تتسع لكل ما تعنيه.</p><button className="text-button wall-reveal" aria-pressed={wall} onClick={() => setWall((value) => !value)}>{wall ? "أعد الكلمات إلى بدايتها" : "شاهد الكلمات وهي تتجمع"} <ArrowLeft size={16} /></button></div></div>
+        <div className="word-wall" aria-label={wall ? "كلمات الذاكرة وقد تجمعت في شكل رقم ٩٥" : "كلمات الذاكرة قبل التجميع"}>{displayedWallWords.map(([item, by], index) => { const position = wallPositions[index] || [50, 50]; return <span key={`${item}-${index}`} style={{ "--i": index, "--x": position[0], "--y": position[1] } as React.CSSProperties}>{item}<small>{by}</small></span>; })}</div>
+        <div className="wall-footer"><span>ذاكرة مفتوحة للجميع</span><span className="wall-counter">{displayedWallWords.length} أثرًا محفوظًا في هذه اللحظة</span><Feather size={18} /></div>
       </section>
 
       <footer className="footer"><span className="brand"><span className="brand-mark"><i /><i /><i /></span> أثر</span><span>صُنع من الذاكرة، لا من الصور.</span><span>اليوم الوطني السعودي ٩٥</span></footer>
