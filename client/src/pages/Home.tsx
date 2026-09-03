@@ -25,6 +25,7 @@ const wallWords = [
   ["بحر", "—"], ["طموح", "—"], ["جدّة", "—"], ["سوالف", "—"], ["غيمة", "—"],
   ["ذكريات", "—"], ["نخلة", "—"], ["وعد", "—"], ["رجعة", "—"], ["أثر", "—"],
   ["مكة", "—"], ["وطن", "—"], ["مستقبل", "—"], ["سعودية", "—"], ["حنين", "—"], ["ضحكة", "—"],
+  ["جذور", "—"], ["كرم", "—"], ["سفر", "—"], ["وعد", "—"], ["أمان", "—"], ["قبلة", "—"], ["عمر", "—"], ["سوالف", "—"], ["صبح", "—"], ["نخلة", "—"], ["أثر", "—"],
 ];
 
 const wallPositions = [
@@ -50,7 +51,7 @@ export default function Home() {
   const activeWord = word.trim() || "ذكريات";
   const journeyMemories = useMemo(() => buildMemories(activeWord), [activeWord]);
   const progress = Math.round((revealed / journeyMemories.length) * 100);
-  const displayedWallWords = saved ? [[activeWord, name || "أنت"], ...wallWords] : wallWords;
+  const displayedWallWords = saved ? [...wallWords, [activeWord, name || "أنت"]] : wallWords;
   const cardText = useMemo(() => `السعودية بالنسبة لي هي: ${activeWord}\n${todayArabic()}\nأثر`, [activeWord]);
 
   const begin = () => {
