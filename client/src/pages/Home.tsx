@@ -98,11 +98,11 @@ export default function Home() {
           <a href="#story">الفكرة</a>
           <a href="#wall">ذاكرة السعودية</a>
         </nav>
-        <div className="edition"><span>اليوم الوطني</span><b>٩٥</b></div>
+        <div className="edition"><span>اليوم الوطني</span><b>٩٦</b></div>
       </header>
 
       <section className="hero" id="top">
-        <div className="hero-number" aria-hidden="true">95</div>
+        <div className="hero-number" aria-hidden="true">96</div>
         <div className="hero-copy">
           <p className="eyebrow"><span className="rule" /> تجربة ذاكرة رقمية <span>٠١ / ٠٣</span></p>
           <h1>لو اختفت كل الصور،<br /><em>كيف ستتذكر السعودية؟</em></h1>
@@ -142,8 +142,8 @@ export default function Home() {
         <div className="memory-card-wrap">
           <div className="card-intro"><p className="eyebrow">هذه ليست صورة السعودية</p><h2>هذه الأشياء<br /><em>التي جعلتها السعودية.</em></h2></div>
             <article className="memory-card" aria-label="بطاقتك الرقمية">
-            <div className="card-ornament" aria-hidden="true"><span>٩</span><span>٥</span><i /><i /><i /></div>
-            <div className="card-top"><span>أثر / ٩٥</span><span>{todayArabic()}</span></div>
+            <div className="card-ornament" aria-hidden="true"><span>٩</span><span>٦</span><i /><i /><i /></div>
+            <div className="card-top"><span>أثر / ٩٦</span><span>{todayArabic()}</span></div>
             <div className="card-center"><span>السعودية بالنسبة لي هي</span><strong>{activeWord}</strong><span className="card-quote">«الكلمة التي بقيت، حين اختفت الصور.»</span><span className="card-line" /></div>
             <div className="card-bottom"><span>{name || "ذاكرة شخصية"}</span><span className="card-mark"><i /><i /><i /></span></div>
           </article>
@@ -154,11 +154,11 @@ export default function Home() {
 
       <section className={`wall ${wall ? "wall-visible" : "wall-scattered"}`} id="wall">
         <div className="wall-heading"><div><p className="eyebrow">THE COLLECTIVE MEMORY</p><h2>آلاف الكلمات،<br /><em>وطن واحد.</em></h2></div><div className="wall-side"><p className="wall-description">كل كلمة هنا تركها شخص ما. معًا، لا نصنع صورة للسعودية؛ نصنع المساحة التي تتسع لكل ما تعنيه.</p><button className="text-button wall-reveal" aria-pressed={wall} onClick={() => setWall((value) => !value)}>{wall ? "أعد الكلمات إلى بدايتها" : "شاهد الكلمات وهي تتجمع"} <ArrowLeft size={16} /></button></div></div>
-        <div className="word-wall" aria-label={wall ? "كلمات الذاكرة وقد تجمعت في شكل رقم ٩٥" : "كلمات الذاكرة قبل التجميع"}>{displayedWallWords.map(([item, by], index) => { const position = wallPositions[index] || [50, 50]; return <span key={`${item}-${index}`} style={{ "--i": index, "--x": position[0], "--y": position[1] } as React.CSSProperties}>{item}<small>{by}</small></span>; })}</div>
+        <div className="word-wall" aria-label={wall ? "كلمات الذاكرة وقد تجمعت في شكل رقم ٩٦" : "كلمات الذاكرة قبل التجميع"}>{displayedWallWords.map(([item, by], index) => { const position = wallPositions[index] || [50, 50]; return <span key={`${item}-${index}`} style={{ "--i": index, "--x": position[0], "--y": position[1] } as React.CSSProperties}>{item}<small>{by}</small></span>; })}</div>
         <div className="wall-footer"><span>ذاكرة مفتوحة للجميع</span><span className="wall-counter">{displayedWallWords.length} أثرًا محفوظًا في هذه اللحظة</span><Feather size={18} /></div>
       </section>
 
-      <footer className="footer"><span className="brand"><span className="brand-mark"><i /><i /><i /></span> أثر</span><span>صُنع من الذاكرة، لا من الصور.</span><span>اليوم الوطني السعودي ٩٥</span></footer>
+      <footer className="footer"><span className="brand"><span className="brand-mark"><i /><i /><i /></span> أثر</span><span>صُنع من الذاكرة، لا من الصور.</span><span>اليوم الوطني السعودي ٩٦</span></footer>
     </main>
   );
 }
