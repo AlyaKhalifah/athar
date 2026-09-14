@@ -3,7 +3,7 @@
  * asymmetric composition, quiet reveals, and the handwritten trace as a recurring motif.
  */
 import { useMemo, useState } from "react";
-import { ArrowLeft, ArrowUpLeft, Copy, Eye, Feather, Volume2, VolumeX } from "lucide-react";
+import { ArrowLeft, ArrowUpLeft, Download, Eye, Feather, Volume2, VolumeX } from "lucide-react";
 import { toast } from "sonner";
 
 const buildMemories = (word: string) => [
@@ -68,9 +68,105 @@ export default function Home() {
     else setShowCard(true);
   };
 
-  const copyCard = async () => {
-    await navigator.clipboard?.writeText(cardText);
-    toast("نُسخت بطاقتك إلى الذاكرة.");
+  const downloadCard = async () => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1400;
+    canvas.height = 820;
+    const context = canvas.getContext("2d");
+    if (!context) {
+      toast("تعذر تجهيز صورة البطاقة.");
+      return;
+    }
+
+    await document.fonts?.ready;
+    context.direction = "rtl";
+    context.textAlign = "right";
+    context.textBaseline = "alphabetic";
+
+    const roundedRect = (x: number, y: number, width: number, height: number, radius: number) => {
+      context.beginPath();
+      context.moveTo(x + radius, y);
+      context.arcTo(x + width, y, x + width, y + height, radius);
+      context.arcTo(x + width, y + height, x, y + height, radius);
+      context.arcTo(x, y + height, x, y, radius);
+      context.arcTo(x, y, x + width, y, radius);
+      context.closePath();
+    };
+
+    context.fillStyle = "#315c4b";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.strokeStyle = "rgba(244,240,233,.38)";
+    context.lineWidth = 2;
+    roundedRect(28, 28, canvas.width - 56, canvas.height - 56, 4);
+    context.stroke();
+
+    context.fillStyle = "#e8c9af";
+    context.globalAlpha = 0.9;
+    context.font = '700 140px "DM Mono", monospace';
+    context.textAlign = "left";
+    context.fillText("٩", 92, 250);
+    context.globalAlpha = 0.28;
+    context.strokeStyle = "#e8c9af";
+    context.lineWidth = 3;
+    context.strokeText("٦", 164, 326);
+    context.globalAlpha = 1;
+
+    context.fillStyle = "rgba(244,240,233,.72)";
+    context.font = '500 24px "DM Mono", monospace';
+    context.textAlign = "right";
+    context.fillText("أثر / ٩٦", canvas.width - 84, 94);
+    context.fillText(todayArabic(), 84, 94);
+
+    context.fillStyle = "#f4f0e9";
+    context.font = '500 24px "IBM Plex Sans Arabic", Arial, sans-serif';
+    context.fillText("السعودية بالنسبة لي هي", canvas.width - 84, 330);
+    context.fillStyle = "#e8c9af";
+    context.font = '700 76px "Noto Kufi Arabic", Arial, sans-serif';
+    context.fillText(activeWord, canvas.width - 84, 440);
+
+    context.fillStyle = "#f0ded0";
+    context.font = '400 25px "IBM Plex Sans Arabic", Arial, sans-serif';
+    context.fillText("«الكلمة التي بقيت، حين اختفت الصور.»", canvas.width - 84, 520);
+    context.strokeStyle = "#d0a98d";
+    context.lineWidth = 2;
+    context.beginPath();
+    context.moveTo(canvas.width - 84, 568);
+    context.lineTo(canvas.width - 260, 568);
+    context.stroke();
+
+    context.fillStyle = "rgba(244,240,233,.78)";
+    context.font = '500 22px "IBM Plex Sans Arabic", Arial, sans-serif';
+    context.fillText(name || "ذاكرة شخصية", canvas.width - 84, canvas.height - 82);
+    context.textAlign = "left";
+    context.font = '500 20px "DM Mono", monospace';
+    context.fillText("ATHAR / MEMORY", 84, canvas.height - 82);
+
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png", 1));
+    if (!blob) {
+      toast("تعذر إنشاء صورة البطاقة.");
+      return;
+    }
+
+    const file = new File([blob], "athar-memory.png", { type: "image/png" });
+    if (navigator.share && navigator.canShare?.({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: "بطاقة أثر", text: `أثر / ٩٦ — ${activeWord}` });
+        toast("تم تجهيز بطاقتك للمشاركة.");
+        return;
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+      }
+    }
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "athar-memory.png";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 10000);
+    toast("تم تنزيل بطاقتك كصورة PNG.");
   };
 
   const shareCard = async () => {
@@ -147,7 +243,7 @@ export default function Home() {
             <div className="card-center"><span>السعودية بالنسبة لي هي</span><strong>{activeWord}</strong><span className="card-quote">«الكلمة التي بقيت، حين اختفت الصور.»</span><span className="card-line" /></div>
             <div className="card-bottom"><span>{name || "ذاكرة شخصية"}</span><span className="card-mark"><i /><i /><i /></span></div>
           </article>
-          <div className="card-actions"><button className="ink-button" onClick={copyCard}><Copy size={16} /> انسخ البطاقة</button><button className="text-button" onClick={shareCard}><ArrowUpLeft size={16} /> انسخ رابط بطاقتي</button><button className="text-button" onClick={() => { setWall(true); document.getElementById("wall")?.scrollIntoView({ behavior: "smooth" }); }}><Eye size={16} /> شاهد الذاكرة الجماعية</button></div>
+          <div className="card-actions"><button className="ink-button" onClick={downloadCard}><Download size={16} /> حمّل البطاقة PNG</button><button className="text-button" onClick={shareCard}><ArrowUpLeft size={16} /> انسخ رابط بطاقتي</button><button className="text-button" onClick={() => { setWall(true); document.getElementById("wall")?.scrollIntoView({ behavior: "smooth" }); }}><Eye size={16} /> شاهد الذاكرة الجماعية</button></div>
           <div className="add-memory"><p>هل تريد أن تضيف ذاكرتك إلى ذاكرة السعودية؟</p><div><input aria-label="اسمك" value={name} onChange={(event) => setName(event.target.value)} placeholder="اسمك (اختياري)" /><button onClick={saveMemory} disabled={saved}>{saved ? "تمت الإضافة" : "أضف أثري"}</button></div></div>
         </div>
       </section>}

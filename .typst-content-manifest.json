@@ -1,0 +1,11 @@
+{
+  "task_kind": "new-document",
+  "output": "pdf",
+  "signals": ["code-archive"],
+  "hard_constraints": ["single-pdf", "complete-updated-source"],
+  "content_features": {
+    "code_blocks": 40,
+    "defined_terms": 0,
+    "portrait_images": 0
+  }
+}
