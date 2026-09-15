@@ -6,13 +6,79 @@ import { useMemo, useState } from "react";
 import { ArrowLeft, ArrowUpLeft, Download, Eye, Feather, Volume2, VolumeX } from "lucide-react";
 import { toast } from "sonner";
 
-const buildMemories = (word: string) => [
-  { label: "البداية", detail: `من كلمة «${word}» يبدأ الخيط؛ شيء صغير يفتح بابًا كبيرًا.`, glyph: "01" },
-  { label: "صوتها", detail: `في «${word}» نبرة بيت يعرفك، وصوت يعود إليك مهما ابتعدت.`, glyph: "02" },
-  { label: "ملمسها", detail: `لو كان لـ«${word}» ملمس، لكان دفء يدٍ تمسك بك قبل أن تسأل.`, glyph: "03" },
-  { label: "مكانها", detail: `تسكن «${word}» في طريق، أو فنجان، أو نافذة تطل على أول الحكاية.`, glyph: "04" },
-  { label: "ما يبقى", detail: `حين تتغير التفاصيل، تبقى «${word}» كأثر هادئ لا يحتاج إلى صورة.`, glyph: "05" },
-];
+const buildMemories = (word: string) => {
+  const normalized = word.trim().toLowerCase();
+  const profile = [
+    {
+      words: ["بيت", "أهل", "عائلة", "منزل"],
+      details: [
+        `في «${word}» تبدأ الحكاية من عتبة تعرف خطواتك قبل أن تصل.`,
+        `لـ«${word}» صوت مفتاح، وضحكة تأتي من الغرفة المجاورة.`,
+        `ملمس «${word}» يدٌ تربّت على كتفك وتقول: أنت في مكانك.`,
+        `يسكن «${word}» في نافذة مضيئة، وفي اسم ينادى بحب.`,
+        `يبقى من «${word}» شعور العودة، حتى عندما نكون بعيدين.`,
+      ],
+    },
+    {
+      words: ["قهوة", "فنجان", "دلة"],
+      details: [
+        `في «${word}» صباحٌ يتأنى كي يجمع الوجوه حوله.`,
+        `لـ«${word}» صوت صبّة هادئة تسبق الكلام وتفتح المجلس.`,
+        `ملمس «${word}» دفء فنجان بين يدين تعرفان معنى الرفقة.`,
+        `تسكن «${word}» على طرف مجلس، حيث تبدأ السوالف بلا موعد.`,
+        `يبقى من «${word}» طعم لحظة قالت لنا: خذ وقتك.`,
+      ],
+    },
+    {
+      words: ["بحر", "مكة", "نخلة", "جدة", "جدّة"],
+      details: [
+        `في «${word}» طريقٌ مفتوح يجعل القلب أخفّ كلما مشى.`,
+        `لـ«${word}» صوت موج، أو دعاء، أو ريح تمرّ بين سعف النخل.`,
+        `ملمس «${word}» ملحٌ دافئ وشمسٌ تحفظ لون الأيام.`,
+        `تسكن «${word}» في جهة نعرفها حتى ونحن لا نراها.`,
+        `يبقى من «${word}» أفقٌ واسع يعلّمنا أن المكان يمكن أن يحتوينا.`,
+      ],
+    },
+    {
+      words: ["وطن", "سعودية", "بلد", "كرم", "أمان", "سلام"],
+      details: [
+        `في «${word}» تتسع الحكاية لأكثر من قلب وأكثر من بيت.`,
+        `لـ«${word}» صوت خطوات كثيرة تمشي في اتجاه واحد.`,
+        `ملمس «${word}» يدٌ ممدودة قبل أن نطلب، وبابٌ لا يُغلق.`,
+        `تسكن «${word}» في التفاصيل الصغيرة التي تجعل الغريب قريبًا.`,
+        `يبقى من «${word}» وعدٌ هادئ بأن القادم يمكن أن يكون أجمل.`,
+      ],
+    },
+  ].find(({ words }) => words.some((candidate) => normalized.includes(candidate)));
+
+  const details = profile?.details || [
+    `من «${word}» يبدأ شعور صغير يكبر كلما منحناه وقتًا.`,
+    `لـ«${word}» نبرة خاصة؛ كأنها تنادينا باسم لا يسمعه سوانا.`,
+    `ملمس «${word}» دفءٌ لا يحتاج إلى شرح كي يصل.`,
+    `تسكن «${word}» في مكان أو شخص أو لحظة نعود إليها من الداخل.`,
+    `يبقى من «${word}» أثرٌ دافئ لا يشبه أي ذاكرة أخرى.`,
+  ];
+
+  return details.map((detail, index) => ({
+    label: ["البداية", "صوتها", "ملمسها", "مكانها", "ما يبقى"][index],
+    detail,
+    glyph: String(index + 1).padStart(2, "0"),
+  }));
+};
+
+const buildCardMessage = (word: string) => {
+  const normalized = word.trim().toLowerCase();
+  const matched = [
+    { words: ["بيت", "أهل", "عائلة", "منزل"], line: `في «${word}» دفءٌ يعرف الطريق إلى القلب، حتى لو تغيّر المكان.` },
+    { words: ["أمان", "سلام", "طمأنينة"], line: `في «${word}» مساحة نعود إليها ونحن مطمئنون أن لنا مكانًا.` },
+    { words: ["قهوة", "فنجان", "دلة"], line: `في «${word}» صباحٌ صغير يجمعنا قبل أن تبدأ الحكايات.` },
+    { words: ["بحر", "مكة", "نخلة", "جدة", "جدّة"], line: `في «${word}» مكانٌ يترك ظله فينا، حتى بعد أن نبتعد عنه.` },
+    { words: ["طفولة", "ذكريات", "حنين", "ماضي"], line: `في «${word}» صوتٌ قديم لا يبهت؛ يكفي أن نتذكره كي نبتسم.` },
+    { words: ["وطن", "سعودية", "بلد", "كرم"], line: `في «${word}» اتساعٌ يشبهنا؛ كثير من القلوب، وبيت واحد.` },
+  ].find(({ words }) => words.some((candidate) => normalized.includes(candidate)));
+
+  return matched?.line || `في «${word}» معنى خاص بك؛ أثرٌ دافئ لا يشبه أي ذاكرة أخرى.`;
+};
 
 const sharedState = () => {
   const params = new URLSearchParams(window.location.search);
@@ -52,7 +118,7 @@ export default function Home() {
   const journeyMemories = useMemo(() => buildMemories(activeWord), [activeWord]);
   const progress = Math.round((revealed / journeyMemories.length) * 100);
   const displayedWallWords = saved ? [...wallWords, [activeWord, name || "أنت"]] : wallWords;
-  const cardText = useMemo(() => `السعودية بالنسبة لي هي: ${activeWord}\n${todayArabic()}\nأثر`, [activeWord]);
+  const cardMessage = useMemo(() => buildCardMessage(activeWord), [activeWord]);
 
   const begin = () => {
     if (!word.trim()) {
@@ -69,9 +135,12 @@ export default function Home() {
   };
 
   const downloadCard = async () => {
+    const scale = 2;
+    const cardWidth = 540;
+    const cardHeight = 315;
     const canvas = document.createElement("canvas");
-    canvas.width = 1400;
-    canvas.height = 820;
+    canvas.width = cardWidth * scale;
+    canvas.height = cardHeight * scale;
     const context = canvas.getContext("2d");
     if (!context) {
       toast("تعذر تجهيز صورة البطاقة.");
@@ -79,9 +148,11 @@ export default function Home() {
     }
 
     await document.fonts?.ready;
+    context.scale(scale, scale);
     context.direction = "rtl";
-    context.textAlign = "right";
     context.textBaseline = "alphabetic";
+    context.fillStyle = "#315c4b";
+    context.fillRect(0, 0, cardWidth, cardHeight);
 
     const roundedRect = (x: number, y: number, width: number, height: number, radius: number) => {
       context.beginPath();
@@ -93,61 +164,89 @@ export default function Home() {
       context.closePath();
     };
 
-    context.fillStyle = "#315c4b";
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    context.strokeStyle = "rgba(244,240,233,.38)";
-    context.lineWidth = 2;
-    roundedRect(28, 28, canvas.width - 56, canvas.height - 56, 4);
+    context.strokeStyle = "rgba(244,240,233,.34)";
+    context.lineWidth = 1;
+    roundedRect(12, 12, cardWidth - 24, cardHeight - 24, 2);
     context.stroke();
 
-    context.fillStyle = "#e8c9af";
-    context.globalAlpha = 0.9;
-    context.font = '700 140px "DM Mono", monospace';
+    // The full tactile ornament: ٩, outlined ٦, three dots, and the circular trace.
+    context.save();
     context.textAlign = "left";
-    context.fillText("٩", 92, 250);
+    context.fillStyle = "#e8c9af";
+    context.globalAlpha = 0.92;
+    context.font = '700 74px "DM Mono", monospace';
+    context.fillText("٩", 25, 105);
+    context.globalAlpha = 0.5;
+    context.font = '700 74px "DM Mono", monospace';
+    context.strokeStyle = "#e8c9af";
+    context.lineWidth = 1;
+    context.strokeText("٦", 58, 140);
+    context.globalAlpha = 0.82;
+    context.fillStyle = "#e8c9af";
+    [[89, 14], [78, 75], [21, 95]].forEach(([x, y]) => {
+      context.beginPath();
+      context.arc(x, y, 2.5, 0, Math.PI * 2);
+      context.fill();
+    });
     context.globalAlpha = 0.28;
     context.strokeStyle = "#e8c9af";
-    context.lineWidth = 3;
-    context.strokeText("٦", 164, 326);
-    context.globalAlpha = 1;
+    context.beginPath();
+    context.arc(-18, cardHeight + 18, 120, Math.PI * 1.12, Math.PI * 1.82);
+    context.stroke();
+    context.restore();
 
-    context.fillStyle = "rgba(244,240,233,.72)";
-    context.font = '500 24px "DM Mono", monospace';
+    context.fillStyle = "rgba(244,240,233,.74)";
+    context.font = '500 10px "DM Mono", monospace';
     context.textAlign = "right";
-    context.fillText("أثر / ٩٦", canvas.width - 84, 94);
-    context.fillText(todayArabic(), 84, 94);
+    context.fillText("أثر / ٩٦", cardWidth - 25, 24);
+    context.textAlign = "left";
+    context.fillText(todayArabic(), 25, 24);
 
-    context.fillStyle = "#f4f0e9";
-    context.font = '500 24px "IBM Plex Sans Arabic", Arial, sans-serif';
-    context.fillText("السعودية بالنسبة لي هي", canvas.width - 84, 330);
+    context.textAlign = "right";
+    context.fillStyle = "rgba(244,240,233,.75)";
+    context.font = '500 12px "IBM Plex Sans Arabic", Arial, sans-serif';
+    context.fillText("السعودية بالنسبة لي هي", cardWidth - 25, 125);
     context.fillStyle = "#e8c9af";
-    context.font = '700 76px "Noto Kufi Arabic", Arial, sans-serif';
-    context.fillText(activeWord, canvas.width - 84, 440);
+    context.font = '700 38px "Noto Kufi Arabic", Arial, sans-serif';
+    context.fillText(activeWord, cardWidth - 25, 173);
 
     context.fillStyle = "#f0ded0";
-    context.font = '400 25px "IBM Plex Sans Arabic", Arial, sans-serif';
-    context.fillText("«الكلمة التي بقيت، حين اختفت الصور.»", canvas.width - 84, 520);
+    context.font = '400 10px "IBM Plex Sans Arabic", Arial, sans-serif';
+    const messageWords = `«${cardMessage}»`.split(" ");
+    const messageLines: string[] = [];
+    let messageLine = "";
+    messageWords.forEach((part) => {
+      const candidate = messageLine ? `${messageLine} ${part}` : part;
+      if (context.measureText(candidate).width > 430 && messageLine) {
+        messageLines.push(messageLine);
+        messageLine = part;
+      } else {
+        messageLine = candidate;
+      }
+    });
+    if (messageLine) messageLines.push(messageLine);
+    messageLines.slice(0, 2).forEach((line, index) => context.fillText(line, cardWidth - 25, 208 + index * 14));
     context.strokeStyle = "#d0a98d";
-    context.lineWidth = 2;
+    context.lineWidth = 1;
     context.beginPath();
-    context.moveTo(canvas.width - 84, 568);
-    context.lineTo(canvas.width - 260, 568);
+    context.moveTo(cardWidth - 25, 233);
+    context.lineTo(cardWidth - 110, 233);
     context.stroke();
 
     context.fillStyle = "rgba(244,240,233,.78)";
-    context.font = '500 22px "IBM Plex Sans Arabic", Arial, sans-serif';
-    context.fillText(name || "ذاكرة شخصية", canvas.width - 84, canvas.height - 82);
+    context.font = '500 10px "IBM Plex Sans Arabic", Arial, sans-serif';
+    context.fillText(name || "ذاكرة شخصية", cardWidth - 25, cardHeight - 25);
     context.textAlign = "left";
-    context.font = '500 20px "DM Mono", monospace';
-    context.fillText("ATHAR / MEMORY", 84, canvas.height - 82);
+    context.font = '500 9px "DM Mono", monospace';
+    context.fillText("ATHAR / MEMORY", 25, cardHeight - 25);
 
-    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png", 1));
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.96));
     if (!blob) {
       toast("تعذر إنشاء صورة البطاقة.");
       return;
     }
 
-    const file = new File([blob], "athar-memory.png", { type: "image/png" });
+    const file = new File([blob], "athar-memory.jpg", { type: "image/jpeg" });
     if (navigator.share && navigator.canShare?.({ files: [file] })) {
       try {
         await navigator.share({ files: [file], title: "بطاقة أثر", text: `أثر / ٩٦ — ${activeWord}` });
@@ -161,12 +260,12 @@ export default function Home() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "athar-memory.png";
+    link.download = "athar-memory.jpg";
     document.body.appendChild(link);
     link.click();
     link.remove();
     window.setTimeout(() => URL.revokeObjectURL(url), 10000);
-    toast("تم تنزيل بطاقتك كصورة PNG.");
+    toast("تم تنزيل بطاقتك كصورة JPEG.");
   };
 
   const shareCard = async () => {
@@ -240,10 +339,10 @@ export default function Home() {
             <article className="memory-card" aria-label="بطاقتك الرقمية">
             <div className="card-ornament" aria-hidden="true"><span>٩</span><span>٦</span><i /><i /><i /></div>
             <div className="card-top"><span>أثر / ٩٦</span><span>{todayArabic()}</span></div>
-            <div className="card-center"><span>السعودية بالنسبة لي هي</span><strong>{activeWord}</strong><span className="card-quote">«الكلمة التي بقيت، حين اختفت الصور.»</span><span className="card-line" /></div>
+            <div className="card-center"><span>السعودية بالنسبة لي هي</span><strong>{activeWord}</strong><span className="card-quote">«{cardMessage}»</span><span className="card-line" /></div>
             <div className="card-bottom"><span>{name || "ذاكرة شخصية"}</span><span className="card-mark"><i /><i /><i /></span></div>
           </article>
-          <div className="card-actions"><button className="ink-button" onClick={downloadCard}><Download size={16} /> حمّل البطاقة PNG</button><button className="text-button" onClick={shareCard}><ArrowUpLeft size={16} /> انسخ رابط بطاقتي</button><button className="text-button" onClick={() => { setWall(true); document.getElementById("wall")?.scrollIntoView({ behavior: "smooth" }); }}><Eye size={16} /> شاهد الذاكرة الجماعية</button></div>
+          <div className="card-actions"><button className="ink-button" onClick={downloadCard}><Download size={16} /> حمّل البطاقة JPG</button><button className="text-button" onClick={shareCard}><ArrowUpLeft size={16} /> انسخ رابط بطاقتي</button><button className="text-button" onClick={() => { setWall(true); document.getElementById("wall")?.scrollIntoView({ behavior: "smooth" }); }}><Eye size={16} /> شاهد الذاكرة الجماعية</button></div>
           <div className="add-memory"><p>هل تريد أن تضيف ذاكرتك إلى ذاكرة السعودية؟</p><div><input aria-label="اسمك" value={name} onChange={(event) => setName(event.target.value)} placeholder="اسمك (اختياري)" /><button onClick={saveMemory} disabled={saved}>{saved ? "تمت الإضافة" : "أضف أثري"}</button></div></div>
         </div>
       </section>}
