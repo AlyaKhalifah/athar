@@ -66,6 +66,17 @@ const buildMemories = (word: string) => {
   }));
 };
 
+const buildMemoryNote = (word: string, index: number) => {
+  const notes = [
+    `كلمة «${word}» فتحت نافذة لم نرها من قبل.`,
+    `كلما اقتربنا من «${word}»، ظهرت حكاية أدفأ من السابقة.`,
+    `في «${word}» تفصيل صغير، لكنه يعرف كيف يبقى طويلًا.`,
+    `أخذت «${word}» مكانها بين الأشياء التي لا نريد نسيانها.`,
+    `هذا هو أثر «${word}»: قريب، شخصي، ولا يشبه أثر أحد آخر.`,
+  ];
+  return notes[index % notes.length];
+};
+
 const buildCardMessage = (word: string) => {
   const normalized = word.trim().toLowerCase();
   const matched = [
@@ -301,7 +312,7 @@ export default function Home() {
         <div className="hero-copy">
           <p className="eyebrow"><span className="rule" /> تجربة ذاكرة رقمية <span>٠١ / ٠٣</span></p>
           <h1>لو اختفت كل الصور،<br /><em>كيف ستتذكر السعودية؟</em></h1>
-          <p className="hero-intro">ليست خريطة. ليست صورة. اترك كلمة واحدة فقط، ودعها تقودك إلى ما يبقى.</p>
+          <p className="hero-intro">{started ? `اتركنا نقترب من «${activeWord}»؛ كل كلمة تحمل بابًا مختلفًا إلى الذاكرة.` : "ليست خريطة. ليست صورة. اترك كلمة واحدة فقط، ودعها تقودك إلى ما يبقى."}</p>
           <div className="word-entry">
             <label htmlFor="memory-word">الكلمة التي تمثّل السعودية بالنسبة لك</label>
             <div className="input-row">
@@ -325,7 +336,7 @@ export default function Home() {
           <div className="reveal-stage">
             <div className="trace-ring"><span>{revealed === 0 ? "أثر" : String(revealed).padStart(2, "0")}</span></div>
             <div className="reveal-copy">
-              {revealed === 0 ? <><p className="serif-note">هناك أشياء لا تظهر من أول نظرة.</p><p>اضغط على الزر. كل كشف يترك علامة جديدة.</p></> : <><span className="reveal-index">{journeyMemories[revealed - 1].glyph} — {journeyMemories[revealed - 1].label}</span><h3>{journeyMemories[revealed - 1].detail}</h3><p>طبقة جديدة من ذاكرتك، أضيفت إلى الأثر.</p></>}
+              {revealed === 0 ? <><p className="serif-note">هناك أشياء لا تظهر من أول نظرة، وربما تبدأ من «{activeWord}».</p><p>{started ? `اضغط على الزر لنكتشف ما تخبئه «${activeWord}».` : "اكتب كلمتك أولًا؛ كل كشف يترك علامة جديدة."}</p></> : <><span className="reveal-index">{journeyMemories[revealed - 1].glyph} — {journeyMemories[revealed - 1].label}</span><h3>{journeyMemories[revealed - 1].detail}</h3><p>{buildMemoryNote(activeWord, revealed - 1)}</p></>}
               <button className="reveal-button" onClick={revealNext}>{revealed === journeyMemories.length ? "اصنع بطاقتي" : revealed === 0 ? "اكشف أول أثر" : "اكشف التالي"}<ArrowLeft size={17} /></button>
             </div>
           </div>
